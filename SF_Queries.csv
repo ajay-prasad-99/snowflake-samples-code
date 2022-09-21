@@ -30,4 +30,4 @@ alter session set use_cached_result= False;
 create or replace table "AJAY"."PUBLIC"."LINEITEM"
 as
 select * from "SNOWFLAKE_SAMPLE_DATA"."TPCH_SF1000"."LINEITEM"
-alter session set use_cached_result= False;
+alter session set use_cached_result= true;
