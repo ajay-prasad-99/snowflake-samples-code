@@ -1,0 +1,117 @@
+create or replace database mydb; 
+
+create or replace schema mysche; 
+
+--creating source table 
+
+create or replace table source_tab(Name varchar, 
+
+Team varchar, 
+
+Position varchar, 
+
+Height number, 
+
+Weight number, 
+
+Age number); 
+
+drop table source_tab; 
+
+drop table target_tab; 
+
+--creating target table 
+
+create or replace table target_tab(Name varchar, 
+
+Team varchar, 
+
+Position varchar, 
+
+Height number, 
+
+Weight number); 
+
+--creating stage 
+
+create or replace stage my_stg; 
+
+--after putting file into stage we goes for copy data into table from stage.--creating file format 
+
+create or replace file format my_format 
+
+type = 'csv' 
+
+skip_header = 1; 
+
+--executing copy statement into source table 
+
+copy into source_tab from @my_stg 
+
+file_format = my_format 
+
+on_error = continue; 
+
+select * from source_tab; 
+
+--using upsert logic in target tablemerge into target_tab 
+
+using source_tab 
+
+on target_tab.team = source_tab.team 
+
+when not matched 
+
+then 
+
+insert(name,team,position,height,weight)values(source_tab.name,source_tab.team,source_tab.position,source_tab.height,source_tab.weight); 
+
+select * from source_tab; 
+
+select * from target_tab; 
+
+--updating value in target table 
+
+insert into source_tab values('AKASH',' APO', 'First Baseman', 0, 188, 135.71); 
+
+update source_tab 
+
+set weight = 200 
+
+where height = 74; 
+
+merge into target_tab 
+
+using source_tab 
+
+on target_tab.team = source_tab.team 
+
+when not matched 
+
+then 
+
+insert(name,team,position,height,weight)values(source_tab.name,source_tab.team,source_tab.position,source_tab.height,source_tab.weight) 
+
+when matched 
+
+then 
+
+update set target_tab.weight=source_tab.weight; 
+
+select * from source_tab where height = 74; 
+
+select * from target_tab where height = 74; 
+
+merge into target_tab 
+
+using source_tab 
+
+on target_tab.weight = source_tab.weight 
+
+when matched 
+
+then 
+
+update set target_tab.weight=source_tab.weight;show parameter; 
+
+alter session set ERROR_ON_NONDETERMINISTIC_MERGE = FALSE; 

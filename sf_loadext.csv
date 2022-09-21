@@ -1,0 +1,13 @@
+list @POCEXT; 
+
+CREATE or replace TABLE LOADEX (SERIALNUMBER NUMBER NOT NULL, 
+
+                                       CM VARCHAR , 
+
+                                       EMP VARCHAR ,  
+
+                                       DESCR VARCHAR, 
+
+                                       LEAVE5 NUMBER) ; 
+
+copy into loadex from @pocext file_format = POCEXT_FF on_error = continue; 

@@ -1,0 +1,259 @@
+-----------------------------------DATE AND FUNCTION--------------------------------- 
+
+-- CURRENT DATE/TIMESTAMP FUNCTIONS 
+
+   select current_date(); 
+
+    select current_time(); 
+
+   select current_timestamp(); 
+
+  
+
+-- DATE/TIMESTAMP CONSTRUCTION FUNCTIONS 
+
+  
+
+-- DATE_FROM_PARTS 
+
+select date_from_parts(2022, 1, 100), date_from_parts(2022, 1 + 24, 1),date_from_parts(2022, -1, 1); 
+
+  
+
+-- TIME_FROM_PARTS 
+
+select time_from_parts(12, 34, 56, 987654321); 
+
+  
+
+-- TIMESTAMP_FROM_PARTS 
+
+select timestamp_ltz_from_parts(2022, 4, 5, 12, 00, 00); 
+
+select timestamp_ntz_from_parts(2022, 4, 5, 12, 00, 00, 987654321); 
+
+select timestamp_tz_from_parts(2022, 4, 5, 12, 00, 00); 
+
+  
+
+-- DATE/TIME PART EXTRACTION FUNCTION 
+
+  
+
+-- DATE_PART 
+
+select to_timestamp('2022-05-08T23:39:20.123-07:00') as "TIME_STAMP1", 
+
+date_part(year, "TIME_STAMP1") as "EXTRACTED YEAR"; 
+
+  
+
+-- EXTRACT 
+
+select extract(year from to_timestamp('2022-05-08T23:39:20.123-07:00')) as v 
+
+from (values(1)) v1; 
+
+  
+
+-- DAYNAME 
+
+select dayname(to_timestamp_ntz('2022-05-18 10:00')) as day; 
+
+  
+
+-- HOUR,MINUTE,SECONDS 
+
+select '2022-05-18T23:49:20.123-07:00'::timestamp as tstamp, 
+
+hour(tstamp) as "HOUR", 
+
+minute(tstamp) as "MINUTE", 
+
+second(tstamp) as "SECOND"; 
+
+-- LAST DAY 
+
+select to_date('2022-05-17T23:39:20.123-07:00') as "DATE", 
+
+last_day("DATE") as "LAST DAY OF MONTH"; 
+
+  
+
+select to_date('2022-05-17T23:39:20.123-07:00') as "DATE", 
+
+last_day("DATE",'YEAR') as "LAST DAY OF YEAR"; 
+
+  
+
+-- MONTH NAME 
+
+select monthname(to_date('2022-05-17')) as month; 
+
+  
+
+select monthname(to_timestamp('2022-05-17 10:00')) as month; 
+
+  
+
+-- NEXT DAY 
+
+select current_date() as "Today's Date", 
+
+next_day("Today's Date", 'TUESDAY ') as "NEXT TUESDAY"; 
+
+  
+
+-- PREVIOUS DAY 
+
+select current_date() as "Today's Date", 
+
+previous_day("Today's Date", 'Friday ') as "Previous Friday"; 
+
+  
+
+-- YEAR / DAY/ WEEK / MONTH / QUARTER 
+
+select 
+
+'2022-05-17T23:39:20.123-07:00'::timestamp as tstamp, 
+
+year(tstamp) as "YEAR", 
+
+quarter(tstamp) as "QUARTER OF YEAR", 
+
+month(tstamp) as "MONTH", 
+
+day(tstamp) as "DAY", 
+
+dayofmonth(tstamp) as "DAY OF MONTH", 
+
+dayofyear(tstamp) as "DAY OF YEAR"; 
+
+  
+
+-- DATE ADDITION/SUBTRACTION FUNCTION 
+
+  
+
+-- DATEADD 
+
+select to_date('2022-05-17') as v1, dateadd(year, 2, to_date('2022-05-17')) as v; 
+
+  
+
+-- ADD MONTHS 
+
+select add_months('2022-05-17'::timestamp_ntz, 2) as result; 
+
+  
+
+-- DATEDIFF 
+
+  
+
+  Select datediff(year, '2022-04-17 14:39:20'::timestamp, 
+
+'2027-05-17 23:39:20'::timestamp) 
+
+  as diff_years; 
+
+   
+
+-- TIME ADD 
+
+select dateadd(month, 1, '2022-05-17'::date) as result; 
+
+  
+
+-- TIMEDIFF 
+
+                                                                               select timediff(month, '2022-01-1', '2022-12-31') as months; 
+
+  
+
+-- DATE/TIME TRUNCATION FUNCTION 
+
+  
+
+-- DATE_TRUNC 
+
+select to_time('23:39:20.123') as "TIME1", 
+
+date_trunc('MINUTE', "TIME1") as "TRUNCATED TO MINUTE"; 
+
+  
+
+select to_timestamp('2022-05-17T23:39:20.123-07:00') as "TIMESTAMP1", 
+
+date_trunc('HOUR', "TIMESTAMP1") as "TRUNCATED TO HOUR", 
+
+date_trunc('MINUTE', "TIMESTAMP1") as "TRUNCATED TO MINUTE", 
+
+date_trunc('SECOND', "TIMESTAMP1") as "TRUNCATED TO SECOND"; 
+
+  
+
+-- TIME_SLICE 
+
+select '2022-05-18'::date as "DATE", 
+
+time_slice("DATE", 4, 'MONTH', 'START') as "START OF SLICE", 
+
+time_slice("DATE", 4, 'MONTH', 'END') as "END OF SLICE"; 
+
+  
+
+-- TRUNC 
+
+select trunc(to_date('2022-05-17'), 'YEAR'); 
+
+  
+
+-- DATE CONVERSION FUNCTIONS 
+
+  
+
+select to_date('2022-05-17'), date('2022-05-17'); 
+
+  
+
+select to_date('3/4/2022', 'dd/mm/yyyy'); 
+
+select to_time('11.15.00', 'HH24.MI.SS'); 
+
+  
+
+select to_timestamp_tz('04/05/2022 01:02:03', 'dd/mm/yyyy hh24:mi:ss'); 
+
+  
+
+select cast('05-Mar-2014' as timestamp); 
+
+  
+
+-- DATE/TIMESTAMP CONSTRUCTION FUNCTION 
+
+  
+
+-- CONVERT_TIMEZONE 
+
+  
+
+alter session set timestamp_type_mapping = 'TIMESTAMP_LTZ'; 
+
+alter session set timezone = 'Asia/Kolkata'; 
+
+show parameters like 'TIMEZONE';   
+
+  
+
+select 
+
+current_timestamp() as now_in_india, 
+
+convert_timezone('America/New_York', current_timestamp()) as now_in_nyc, 
+
+convert_timezone('Europe/Paris', current_timestamp()) as now_in_paris, 
+
+convert_timezone('Asia/Tokyo', current_timestamp()) as now_in_tokyo; 

@@ -1,0 +1,45 @@
+CREATE or replace TABLE LOADEX (Region varchar,Country varchar,ItemType varchar,SalesChannel varchar,OrderPriority varchar,
+                                 OrderDate date,OrderID number,ShipDate date,UnitsSold number ,UnitPrice number,
+                                 UnitCost number,TotalRevenue number,TotalCost number,TotalProfit number) ; 
+create or replace stage mystage;
+
+  
+  list@mystage;
+  
+CREATE OR REPLACE PIPE "SAMPLEOP"."SAMPLESCH".PIPE1 
+AS COPY INTO "SAMPLEOP"."SAMPLESCH"."LOADEX" FROM @"SAMPLEOP"."SAMPLESCH"."MYSTAGE" FILE_FORMAT = ( TYPE = "CSV");
+
+select*from LOADEX;
+
+alter pipe pipe1 refresh; 
+
+
+select SYSTEM$PIPE_STATUS ('pipe1');
+
+select *
+  from table(information_schema.pipe_usage_history(
+    date_range_start=>to_timestamp_tz('2022-8-3 12:00:00.000 -0700'),
+    date_range_end=>to_timestamp_tz('2022-8-4 12:30:00.000 -0700')));
+    
+    select *
+  from table(information_schema.pipe_usage_history(
+    date_range_start=>dateadd('hour',-12,current_timestamp()),
+    pipe_name=>'pipe1'));
+    
+select * from (validation_pipe_load(
+               pipe_name=>'pipe1',
+               start_time=>dateadd('hour', -10, current_timestamp())));   
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    

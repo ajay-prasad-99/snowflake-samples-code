@@ -1,0 +1,83 @@
+use role sysadmin; 
+
+create database proc1; 
+
+use database proc1; 
+
+create schema procsc; 
+
+use schema procsc; 
+
+create or replace procedure pro() 
+
+returns varchar 
+
+language javascript 
+
+as 
+
+$$ 
+
+try 
+
+{ 
+
+var num_count = snowflake.execute({sqlText:'select count (*) from PROC1.PROCSC.TT'}); 
+
+num_count.next(); 
+
+var x = num_count.getColumnValue(1); 
+
+return x; 
+
+} 
+
+catch(err) 
+
+{ 
+
+return err.message 
+
+} 
+
+$$; 
+
+call pro(); 
+
+select * from TT; 
+
+create or replace table TT (t1 int, t2 int, t3 int); 
+
+insert into TT values (4,5,6); 
+
+ ------------------------------------------------SIMPLE ADD SP---------------------------------------------- 
+
+use role sysadmin; 
+
+use database proc1; 
+
+use schema procsc; 
+
+ create or replace procedure ad (num1 float, num2 float) 
+
+returns float 
+
+language javascript 
+
+as 
+
+$$ 
+
+var ee = NUM1; 
+
+var rr = NUM2; 
+
+var tt = `${ee + rr}`; 
+
+return tt; 
+
+$$ 
+
+; 
+
+call ad(7, 4); 

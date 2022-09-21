@@ -1,0 +1,136 @@
+Create or replace table Akash ( ID int, role varchar, exp int); 
+
+create or replace table rahul ( id int, role varchar, exp int); 
+
+ create or replace stream bhu on table akash; 
+
+show streams; 
+
+insert into Akash values (25, 'trainee', 3); 
+
+select * from akash ; 
+
+select * from bhu ; 
+
+truncate table akash; 
+
+ update akash set id= 25 where role = 'trainee'; 
+
+--show tables in database; 
+
+--show tables in schema ; 
+
+--show roles; 
+
+--grant role akk to role sysadmin; 
+
+--create role akk; 
+
+--drop role akk; 
+
+ ----------------------------------------SIMPLE TSK------------------------------------ 
+
+create or replace table t1 (id int, name varchar); 
+
+ create or replace task tt  
+
+    warehouse = compute_wh 
+
+    schedule= '1 minute' 
+
+    as 
+
+    insert into t1 values (1, 'akash'); 
+
+    show tasks; 
+
+ alter task tt suspend; 
+
+ select * from t1; 
+ ---------------------------------------UDF--------------------------------------------- 
+
+create or replace function area_of_circle1 (radius float ) 
+
+  returns float 
+
+  as 
+
+  'pi() * radius * radius'; 
+
+select area_of_circle(66); 
+
+  --UDF FUNCTION 
+
+create OR REPLACE function darling () 
+
+   returns int  
+
+   as 
+
+   '78893::int' 
+
+   ;  select darling(); 
+
+   --UDF ADDING COLUMN VALUES 
+
+create or replace table Akash (id int, role varchar, exp int); 
+
+insert into akash values (1, 'trainee', '1'); 
+
+insert into akash values (2, 'trainer', '2'); 
+
+select * from akash; 
+
+  
+
+create or replace function akash_values () 
+
+returns numeric 
+
+as 
+
+   $$ 
+
+    select sum ( id + exp) 
+
+        from Akash 
+
+   $$ 
+
+; 
+
+select akash_values (); 
+
+show user functions; 
+
+drop function AKASH_VALUES (); 
+
+ --WITH CLAUSE SP 
+
+create or replace table avatar (people varchar); 
+
+ insert into avatar(people) values ('jaden'),('sonny'), ; 
+
+select * from avatar; 
+
+ create or replace function enemy () 
+
+returns varchar 
+
+as  
+
+$$ 
+
+'Human::varchar' 
+
+$$ 
+
+; 
+
+with  
+
+   body as (select enemy (people) as  from avatar) 
+
+   select body from 
+
+   order by ; 

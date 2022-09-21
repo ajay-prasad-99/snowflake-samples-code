@@ -1,0 +1,144 @@
+use role sysadmin;
+use warehouse compute_wh;
+create database sys_sampleop;
+create schema sys_samplesch;
+use database sys_sampleop;
+use schema sys_samplesch;
+
+
+-- lets create a customer table called customers
+create or replace table customers(
+        id number,
+        first_name varchar,
+        last_name varchar, 
+        DOB date,
+        active boolean,
+        city varchar,
+        insert_time timestamp default current_timestamp()
+)
+comment = 'my customers table';
+;
+
+select * from customers;
+-- lets create a sequence object
+create or replace sequence customer_seq
+  start 2 
+  increment 2
+  comment = 'my demo sequence for customers table';
+
+-- check the sequence object
+select customer_seq.nextval;
+
+-- now create task named task_01
+create or replace task task_01
+   warehouse = compute_wh
+   schedule = '1 minute'
+   as
+   insert into customers (id,first_name,last_name,DOB,active,city) 
+   values (customer_seq.nextval,'monkey','luffy',current_date(),TRUE,'fort');
+
+-- You can assign execute task to any role and 
+-- that role can alter the task to resume or suspend
+use role accountadmin;
+grant execute task, execute managed task on account to role sysadmin;
+
+-- We can alter task and change attributes associated with it.
+alter task task_01 set warehouse  = 'compute_wh';
+alter task task_01 set schedule  = '2 minute';
+
+-- lets clone the task and it works
+create or replace task task_clone clone task_01;
+-- the task will be suspended and it has to be resumed
+
+--interact task
+
+-- Lets show tasks
+show tasks;
+drop task task_01;
+use role accountadmin;
+alter task task_01 resume;
+--task scheduling using cron
+create or replace task task_01
+    warehouse = compute_wh
+    schedule = 'using cron 30 11 L * * UTC'
+    as
+insert into customers (id,first_name,last_name,DOB,active,city) 
+   values (customer_seq.nextval,'Monkey','luffy',current_date(),TRUE,'Fort');
+
+
+/* create or replace task task_hours
+    warehouse = compute_wh
+    schedule = '1 hour'
+        as
+insert into customers values (customer_seq.nextval,'F-Name','L-Name',current_date(),TRUE,'My-City');
+
+create or replace task task_half_min
+    warehouse = compute_wh
+    schedule = '0.5 minute'
+        as
+insert into customers values (customer_seq.nextval,'F-Name','L-Name',current_date(),TRUE,'My-City');
+
+create or replace task task_with_minus
+    warehouse = compute_wh
+    schedule = '1 minute'
+        as
+insert into customers values (customer_seq.nextval,'F-Name','L-Name',current_date(),TRUE,'My-City');*/
+
+
+--SP task
+--set the context    
+use role sysadmin;
+use warehouse compute_wh;
+use database sys_sampleop;
+use schema sys_samplesch;
+
+-- creating a customer table, having a column called task name
+create or replace table customers_sp(
+        id integer autoincrement,
+        task_name varchar,
+        insert_time timestamp default current_timestamp(),
+        first_name varchar,
+        last_name varchar, 
+        DOB date,
+        active boolean,
+        city varchar
+
+) comment = 'my customer table for task with stored proc demo';
+
+-- here is my stored procedure with single insert statement.
+create or replace procedure insert_row_in_customers_sp()
+  returns boolean 
+  language javascript
+  execute as caller
+  as
+  $$
+    sql_insert_command = `insert into customers_sp (task_name,first_name,last_name,DOB,active,city)   
+                        values ('TASK_WITH_SP','Monkey','Luffy',current_date(),TRUE,'Fort');` 
+    result_insert = snowflake.execute(
+    { 
+      sqlText: sql_insert_command   
+    }); 
+    return result_insert;
+  $$
+;
+
+-- call stored procedure to check if it runs 
+call insert_row_in_customers_sp();
+drop procedure insert_row_in_customers_sp();
+-- task calling a stored procedure
+create or replace task task_with_sp
+    warehouse = compute_wh
+    schedule = '1 minute'
+        as
+    call insert_row_in_customer_sp();
+
+-- resume the task so it becomes functional
+alter task task_with_sp resume;
+
+-- check how task entry looks like
+show tasks like 'TASK_WITH_SP';
+
+-- lets check task history table function
+select *  from table(information_schema.task_history()) 
+    where name ='TASK_WITH_SP' 
+    order by scheduled_time;

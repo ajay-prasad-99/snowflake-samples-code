@@ -1,0 +1,163 @@
+CREATE TABLE "POC"."SOURCESCH"."CLOVER" ("EMPID" NUMBER , 
+
+                                         "JOB" STRING, "GRADE" STRING, 
+
+                                         "SALARY" NUMBER , 
+
+                                         "EXPERIENCE" NUMBER ); 
+
+                                          
+
+create or replace table Rover ("EMPID" NUMBER , 
+
+                                         "JOB" STRING, "GRADE" STRING, 
+
+                                         "SALARY" NUMBER , 
+
+                                         "EXPERIENCE" NUMBER ); 
+
+insert into clover values (1001,'Clerk','null', 15000, 1); 
+
+insert into clover values (1003,'supervisor','null', 20000, 1),(1004,'manager','null', 25000, 1); 
+
+create taBLE poc123 as; 
+
+use schema snowflake_sample_data.tpch_sf100; 
+
+select 
+
+       l_returnflag, 
+
+       l_linestatus, 
+
+       sum(l_quantity) as sum_qty, 
+
+       sum(l_extendedprice) as sum_base_price, 
+
+       sum(l_extendedprice * (1-l_discount)) as sum_disc_price, 
+
+       sum(l_extendedprice * (1-l_discount) * (1+l_tax)) as sum_charge, 
+
+       avg(l_quantity) as avg_qty, 
+
+       avg(l_extendedprice) as avg_price, 
+
+       avg(l_discount) as avg_disc, 
+
+       count(*) as count_order 
+
+from 
+
+       lineitem 
+
+where 
+
+       l_shipdate <= dateadd(day, -90, to_date('1998-12-01')) 
+
+group by 
+
+       l_returnflag, 
+
+       l_linestatus 
+
+order by 
+
+       l_returnflag, 
+
+       l_linestatus 
+
+use schema snowflake_sample_data.tpcds_sf10tcl; 
+
+       with v1 as( 
+
+  select i_category, i_brand, cc_name, d_year, d_moy, 
+
+        sum(cs_sales_price) sum_sales, 
+
+        avg(sum(cs_sales_price)) over 
+
+          (partition by i_category, i_brand, 
+
+                     cc_name, d_year) 
+
+          avg_monthly_sales, 
+
+        rank() over 
+
+          (partition by i_category, i_brand, 
+
+                     cc_name 
+
+           order by d_year, d_moy) rn 
+
+  from item, catalog_sales, date_dim, call_center 
+
+  where cs_item_sk = i_item_sk and 
+
+       cs_sold_date_sk = d_date_sk and 
+
+       cc_call_center_sk= cs_call_center_sk and 
+
+       ( 
+
+         d_year = 1999 or 
+
+         ( d_year = 1999-1 and d_moy =12) or 
+
+         ( d_year = 1999+1 and d_moy =1) 
+
+       ) 
+
+  group by i_category, i_brand, 
+
+          cc_name , d_year, d_moy), 
+
+v2 as( 
+
+  select v1.i_category ,v1.d_year, v1.d_moy ,v1.avg_monthly_sales 
+
+        ,v1.sum_sales, v1_lag.sum_sales psum, v1_lead.sum_sales nsum 
+
+  from v1, v1 v1_lag, v1 v1_lead 
+
+  where v1.i_category = v1_lag.i_category and 
+
+       v1.i_category = v1_lead.i_category and 
+
+       v1.i_brand = v1_lag.i_brand and 
+
+       v1.i_brand = v1_lead.i_brand and 
+
+       v1.cc_name = v1_lag.cc_name and 
+
+       v1.cc_name = v1_lead.cc_name and 
+
+       v1.rn = v1_lag.rn + 1 and 
+
+       v1.rn = v1_lead.rn - 1) 
+
+select  * 
+
+from v2 
+
+where  d_year = 1999 and 
+
+        avg_monthly_sales > 0 and 
+
+        case when avg_monthly_sales > 0 then abs(sum_sales - avg_monthly_sales) / avg_monthly_sales else null end > 0.1 
+
+order by sum_sales - avg_monthly_sales, 3 
+
+limit 100; 
+
+       ; 
+
+      select *from  "SNOWFLAKE_SAMPLE_DATA"."WEATHER"."HOURLY_14_TOTAL"; 
+
+       select * from "SNOWFLAKE_SAMPLE_DATA"."WEATHER"."HOURLY_16_TOTAL"; 
+
+         select * from AJAY; 
+
+       create or replace table AJAY as select * from "SNOWFLAKE_SAMPLE_DATA"."WEATHER"."HOURLY_14_TOTAL"; 
+
+ create or replace table AJAY as select * from "SNOWFLAKE_SAMPLE_DATA"."WEATHER"."HOURLY_16_TOTAL"; 

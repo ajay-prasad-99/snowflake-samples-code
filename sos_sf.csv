@@ -1,0 +1,41 @@
+-- Search Optimization Service
+ 
+use SNOWFLAKE_SAMPLE_DATA.TPCDS_SF10TCL;
+ 
+alter warehouse compute_wh set warehouse_size = 'x3large' wait_for_completion = true;
+ 
+--On x3large this takes ~15min
+create or replace transient table "MODULE_03"."CLUSTERING".store_sales_denorm_sos 
+as
+select *
+from "SNOWFLAKE_SAMPLE_DATA"."TPCDS_SF10TCL"."STORE_SALES"
+   inner join customer on ss_customer_sk = c_customer_sk
+   inner join store on ss_store_sk = s_store_sk;
+ 
+ALTER TABLE  STORE_SALES_DENORM_SOS ADD SEARCH OPTIMIZATION;
+ 
+SHOW TABLES LIKE 'STORE_SALES_DENORM_SOS'; 
+ 
+
+-- DIABLE THE RESULT
+ALTER SESSION SET USE_CACHED_RESULT = FALSE;
+ 
+-- Local Disk Cache DISABLED
+alter warehouse compute_wh suspend;
+alter warehouse compute_wh set warehouse_size = 'xsmall';
+ 
+--see query plan: without search optimization access
+ 
+
+select *
+from "SNOWFLAKE_SAMPLE_DATA"."TPCDS_SF10TCL"."STORE_SALES"
+   inner join customer on ss_customer_sk = c_customer_sk
+   inner join store on ss_store_sk = s_store_sk   
+   WHERE C_EMAIL_ADDRESS = 'Evelyn.Lewis@bDOE.org'
+        AND S_STORE_NAME = 'ation'
+   order by ss_item_sk;
+
+SELECT * FROM "MODULE_03"."CLUSTERING".store_sales_denorm_sos 
+   WHERE C_EMAIL_ADDRESS = 'Evelyn.Lewis@bDOE.org'
+        AND S_STORE_NAME = 'ation'
+   order by ss_item_sk;

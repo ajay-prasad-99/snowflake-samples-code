@@ -1,0 +1,68 @@
+select (9/0);
+select DIV0 (9,0);
+select abs(88-243.5);
+select mod (9,99);
+select floor(13.111), floor(-13.111); 
+SELECT ABS(88-243.5) AS result;
+select Round(13.111), Round(-13.111);
+select sign(13), sign(-13.311), sign(0);
+select mod(3,6) as mod1, mod(4.5, 1.2) as mod2;
+select truncate (777.4567, 3), truncate(44.6, 1);
+select exp(8), exp(sign(10)) ;
+select Factorial(34);
+select sqrt(2);
+select pow(3,5);                                       --log and ln--
+select ln(2);
+ select log(2,8),  log(2.7182818284590452353602874713527,2),ln(2); 
+select square (27);  
+
+
+select atanh(-1), atanh(0), atanh(0.5), atanh(1) ;
+
+select cos(0), cos(pi()/3), cos(radians(90));
+
+select cos(1);
+
+select atan2(2,1) ,atan2(10,5),atan2(1,1),atan2(2,2);
+
+
+select atanh();
+
+select cot(0), cot(pi()/3), cot(radians(90));
+
+select degrees(pi()/2), degrees(pi()), degrees(-pi()/2);
+
+select haversine(40.7127, -74.0059, 34.0500, -118.2500);
+
+  select radians(0), radians(90), radians(180), radians(360);                                                                                                                         select pi();
+
+select sin(10), sin(pi()/3), sin(radians(90));  
+  
+   select TANh (10); 
+  select cosh(10);
+  
+   
+  select tan(0), tan(pi()/3), tan(radians(90));
+  
+create or replace table people (name varchar, id integer,age integer);
+insert into people (name, id, age) values
+('luffy',555,2),
+('zoro',888,11),
+('sanji',555,7),
+('nami',777,null),
+('chopper',000,17),
+('usopp',111,17),
+('robin',222,27);
+
+select name, id, age,width_bucket(age,10, 20, 2) age_group
+from people order by age_group;
+
+
+
+
+
+  
+  
+  
+  
+  

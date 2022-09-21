@@ -1,0 +1,33 @@
+"FIRST_DEMO"."FIRST_SCHEMA"."BHUVAN""FIRST_DEMO"."FIRST_SCHEMA"."BHUVAN"use database First_demo;
+use schema First_schema;
+create or replace table First_table(ID int,NAME varchar, Address varchar);
+insert into First_table values (007,'BOND','UK');
+insert into First_table values (008,'BND','U');
+select * from First_table;
+create or replace database Module_2;
+create Database If not exists Module_2;
+create or replace database Module_2 clone First_demo;
+show tables;
+show databases;
+alter database Module_2 set DATA_RETENTION_TIME_IN_DAYS = 10;
+create or replace transient database M1_00;
+drop database M1_00;
+show databases;
+create or replace transient database AA_0;
+alter database AA_0 set DATA_RETENTION_TIME_IN_DAYS = 10;
+create or replace transient database Module_2;
+drop database module_02;
+create or replace database module_2;
+show schemas;
+create or replace table SECOND_TABLE(EMP ID NOT NULL,FIRST_name varchar(10) not null,LAST_name varchar(10) not null,);
+create or replace table Ajay.public.lineitem
+as
+select * "SNOWFLAKE_SAMPLE_DATA"."TPCH_SF1000"."LINEITEM"
+alter session set use_cached_result= False;
+
+#alter session set
+#use_cached_result = false;
+create or replace table "AJAY"."PUBLIC"."LINEITEM"
+as
+select * from "SNOWFLAKE_SAMPLE_DATA"."TPCH_SF1000"."LINEITEM"
+alter session set use_cached_result= False;

@@ -1,0 +1,55 @@
+create or replace table etl (id number, name varchar, uses varchar); 
+Insert into etl values (1,'matillion','platform'), (2,'talend','integration'), (3,'informatica','transformation'), 
+(4,'Hevo','Pipe'); 
+Select * from etl; 
+
+CREATE OR REPLACE TABLE etl_clone CLONE etl; 
+Select * from etl_clone; 
+insert into etl_clone values(5,'ABCD','XYZ'); 
+Select * from etl_clone; 
+
+insert into etl values(6,'Luffy','gum'); 
+Drop table etl; 
+
+select * from etl 
+
+minus 
+
+select * from etl_clone; 
+
+CREATE or replace DATABASE clonett CLONE samplett; 
+
+
+use database clonett; 
+
+use schema samplesch; 
+
+Drop table etl; 
+Show table; 
+
+create or replace schema sampleclone clone samplesch; 
+
+create or replace temporary table tt(id number, 
+
+name varchar, 
+
+uses varchar 
+
+); 
+
+CREATE OR REPLACE TABLE ttCLONE clone tt; 
+
+create or replace transient table tran_tab (id number, 
+
+name varchar, 
+
+uses varchar 
+
+); 
+
+Insert into tran_tab values (1,'matillion','platform'), (2,'talend','integration'), (3,'informatica','transformation'), 
+(4,'Hevo','Pipe'); 
+
+CREATE OR REPLACE transient TABLE tt CLONE tran_tab; 
+
+Select * from tt; 

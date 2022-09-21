@@ -1,0 +1,51 @@
+CREATE or replace TABLE LOADEXsns (SERIALNUMBER NUMBER NOT NULL, 
+
+                                       CM VARCHAR , 
+
+                                       EMP VARCHAR ,  
+
+                                       DESCR VARCHAR, 
+
+                                       LEAVE5 NUMBER) ; 
+
+ create or replace storage integration POCSNS 
+
+type=external_stage 
+
+storage_provider=s3 
+
+storage_aws_role_arn='arn:aws:iam::356139351609:role/pocsns' 
+
+enabled=true 
+
+storage_allowed_locations=('s3://pocsns007/'); 
+
+desc  storage integration POCSNS; 
+
+ create or replace stage snsext 
+
+storage_integration= pocsns 
+
+url = 's3://pocsns007/' 
+
+file_format= (format_name='pocsnsff'); 
+
+ list@snsext; 
+
+--create sns topic, and put the ARN on below 
+
+select system$get_aws_sns_iam_policy('arn:aws:sns:ap-south-1:356139351609:snsforpoc'); 
+
+ create or replace pipe pocsns 
+
+AUTO_INGEST = TRUE 
+
+aws_sns_topic='arn:aws:sns:ap-south-1:356139351609:snsforpoc' 
+
+as 
+
+copy into LOADEXsns from @snsext on_error=continue file_format=POCSNSFF; 
+
+ select*from LOADEXsns; 
+
+alter pipe pocsns refresh; 

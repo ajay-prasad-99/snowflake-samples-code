@@ -1,0 +1,45 @@
+-- Transaction commit and rollback in snowflake.
+
+alter session set autocommit = False;
+start transaction name TT1;
+
+show transactions;
+
+create or replace table people (id number,
+                     join_date date,
+                     dept varchar(10),
+                     salary number,
+                     manager_id number);
+                     
+select * from people;
+
+
+commit;
+
+select * from people;
+
+show transactions;
+-----------------------------------------------------------------------------------------------------------------------
+start transaction name TT2;
+show transactions;
+create or replace table people2(id number,
+                     join_date date,
+                     dept varchar(10),
+                     salary number,
+                     manage number);
+                     
+insert into people2 values(8,'2014-10-01','HR',40000,4),
+                                 (12,'2014-09-01','Tech',50000,9),
+                                 (3,'2018-09-01','Marketing',30000,5),
+                                 (4,'2017-09-01','HR',10000,5),
+                                 (25,'2019-09-01','HR',35000,9),
+                                 (12,'2014-09-01','Tech',50000,9),
+                                 (86,'2015-09-01','Tech',90000,4),
+                                 (73,'2016-09-01','Marketing',20000,1);                                 
+select * from people2;
+rollback;
+select * from people2;
+-----------------------------------------------------------------------------------------------------------------------
+show transactions;
+alter session set autocommit = True;
+

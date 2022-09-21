@@ -1,0 +1,141 @@
+create or replace table people (score1 int, score2 int, score3 int);
+insert into people values
+    ( 0, 1, 10), (0, 2, 20), (0, 3, 30),
+    (100, 1, 10),(100, 2, 30),(100, 2, 5),(100, 3, 11),(100, 3, 120),
+    (200, 1, 10000),(200, 1, 200),(200, 1, 808080),(200, 2, 33333),(200, 3, null), (200, 3, 4),
+    (300, 1, null), (300, 1, null);
+select * from  people;
+-- count, sum , avg, min, max as window functions
+select
+    score1,score2, score3,
+    count(score3) over (partition by score1 order by score2 rows between unbounded preceding and current row) count_score3_rows,
+    sum(score3)   over (partition by score1 order by score2 rows between unbounded preceding and current row) sum_score3_rows,
+    avg(score3)   over (partition by score1 order by score2 rows between unbounded preceding and current row) avg_score3_rows,
+    min(score3)   over (partition by score1 order by score2 rows between unbounded preceding and current row) min_score3_rows,
+    max(score3)   over (partition by score1 order by score2 rows between unbounded preceding and current row) max_score3_rows
+  from people
+  order by score1,score2;
+--Range --
+select
+    score1,score2, score3,
+    count(score3) over (partition by score1 order by score2 range between unbounded preceding and current row) count_score3_range,
+    sum(score3)   over (partition by score1 order by score2 range between unbounded preceding and current row) sum_score3_range,
+    avg(score3)   over (partition by score1 order by score2 range between unbounded preceding and current row) avg_score3_range,
+    min(score3)   over (partition by score1 order by score2 range between unbounded preceding and current row) min_score3_range,
+    max(score3)   over (partition by score1 order by score2 range between unbounded preceding and current row) max_score3_range
+  from people
+  order by score1,score2;
+ --default--
+ select
+    score1,score2, score3,
+    count(score3) over (partition by score1 order by score2) count_score3_range,
+    sum(score3)   over (partition by score1 order by score2) sum_score3_range,
+    avg(score3)   over (partition by score1 order by score2) avg_score3_range,
+    min(score3)   over (partition by score1 order by score2) min_score3_range,
+    max(score3)   over (partition by score1 order by score2) max_score3_range
+  from people
+  order by score1,score2;
+--Sliding Frame- 
+create table match_table
+  (score1 int, score2 int, score3 int, score4 int, score varchar(100));
+insert into match_table values
+  (100,1,1,70,'seventy'),(100,2,2,30, 'thirty'),(100,3,3,40,'forty'),(100,4,null,90,'ninety'),
+  (100,5,5,50,'fifty'),(100,6,6,30,'thirty'),
+  (200,7,7,40,'forty'),(200,8,null,null,'n_u_l_l'),(200,9,null,null,'n_u_l_l'),(200,10,10,20,'twenty'),
+  (200,11,null,90,'ninety'),
+  (300,12,12,30,'thirty'),
+  (400,13,null,20,'twenty');
+select * from match_table;
+--sliding min value two columns.
+select score1,score2, score3 as Score_col,
+    min(score3) over (partition by score1 order by score2 rows between 3 preceding and 1 preceding) min_score3_3score1_1score1,
+    min(score3) over (partition by score1 order by score2 rows between 1 following and 3 following) min_score3_1_3,
+    min(score3) over (partition by score1 order by score2 rows between 1 preceding and 3 following) min_score3_1score1_3,
+    score,
+    min(score) over (partition by score1 order by score2 rows between 3 preceding and 1 preceding) min_score_3score1_1score1,
+    min(score ) over (partition by score1 order by score2 rows between 1 following and 3 following) min_score_1_3,
+    min(score ) over (partition by score1 order by score2 rows between 1 preceding and 3 following) min_sscore_1score1_3
+  from match_table
+  order by score1,score2;
+  
+  
+create or replace table people
+( ID int
+, NAME varchar
+, DEPT_NAME varchar
+, SALARY int);
+insert into people values(01, 'Luffy', 'Admin', 4000);
+insert into people values(02, 'Nami', 'HR', 3000);
+insert into people values(03, 'Usopp', 'IT', 4000);
+insert into people values(04, 'zoro', 'Finance', 6500);
+insert into people values(05, 'chopper', 'HR', 3000);
+insert into people values(06, 'robin',  'Finance', 5000);
+insert into people values(07, 'Ace', 'HR', 7000);
+insert into people values(08, 'buggy', 'Admin', 4000);
+insert into people values(09, 'white', 'IT', 6500);
+insert into people values(10, 'black', 'IT', 7000);
+
+COMMIT;
+
+
+/* **************
+   Video Summary
+ ************** */
+
+select * from people;
+
+-- Using Aggregate function as Window Function
+-- Without window function, SQL will reduce the no of records.
+select dept_name, max(salary) from people
+group by dept_name;
+
+-- By using MAX as an window function, SQL will not reduce records but the result will be shown corresponding to each record.
+select e.*, max(salary) over(partition by dept_name) as max_salary
+from people e;
+
+
+-- row_number(), rank() and dense_rank()
+select e.*,row_number() over(partition by dept_name) as rn
+from people e;
+
+
+-- Fetch the first 2 employees with Row number()
+select * from (
+	select e.*,
+	row_number() over(partition by dept_name order by id) as rn
+	from people e) x
+where x.rn < 3;
+
+
+-- Fetch the top 3 employees in each department earning the max salary.
+select * from (
+	select e.*,
+	rank() over(partition by dept_name order by salary desc) as rnk
+	from employee e) x
+where x.rnk < 4;
+
+
+-- Checking the different between rank, dense_rnk and row_number window functions:
+select e.*,
+rank() over(partition by dept_name order by salary desc) as rnk,
+dense_rank() over(partition by dept_name order by salary desc) as dense_rnk,
+row_number() over(partition by dept_name order by salary desc) as rn
+from people e;
+
+
+
+-- lead and lag
+
+-- fetch a query to display if the salary of an employee is higher, lower or equal to the previous employee.
+select e.*,
+lag(salary) over(partition by dept_name order by id) as prev_people_sal,
+case when e.salary > lag(salary) over(partition by dept_name order by id) then 'Higher than previous people'
+     when e.salary < lag(salary) over(partition by dept_name order by id) then 'Lower than previous people'
+	 when e.salary = lag(salary) over(partition by dept_name order by id) then 'Same than previous people' end as sal_range
+from people e;
+
+-- Similarly using lead function to see how it is different from lag.
+select e.*,
+lag(salary) over(partition by dept_name order by id) as prev_people_sal,
+lead(salary) over(partition by dept_name order by id) as next_people_sal
+from people e;

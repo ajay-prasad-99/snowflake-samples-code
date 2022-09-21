@@ -1,0 +1,65 @@
+----------------------------------------------STREAM TASK AND SP**-------------------------------------- 
+
+use role sysadmin; 
+
+use database proc; 
+
+use schema procsc; 
+
+ create or replace table s1 (id varchar, date timestamp); 
+
+ create or replace stream s1_stream on table s1 append_only= true; 
+
+ create or replace table t1 (id varchar, s1_date timestamp,t1_date timestamp); 
+
+ create or replace procedure s1_sp() 
+
+returns string not null 
+
+language javascript 
+
+as 
+
+$$ 
+
+var sql_cmd1 = `insert into s1 select uuid_string(), current_timestamp::timestamp_ntz;` 
+
+var sql1_insert = snowflake.createStatement({sqlText:sql_cmd1}); 
+
+var sql1_exe = sql1_insert.execute(); 
+
+ var s1_stream = `insert into t1 select id,date, current_timestamp()::timestamp_ntz  
+
+                  from s1_stream where metadata$action= 'INSERT';` 
+
+var stream_insert = snowflake.createStatement({sqlText:s1_stream}); 
+
+var stream_exe = stream_insert.execute(); 
+
+return 'okay'; 
+
+$$; 
+
+ create or replace task s1_sp_task 
+
+warehouse= wh 
+
+schedule ='1 minute' when system$stream_has_data('s1_stream') as call s1_sp(); 
+
+ alter task s1_sp_task resume; 
+
+SELECT * 
+
+FROM table(information_schema.task_history(task_name=>'source_table_stream_procedure_task' 
+
+    ,scheduled_time_range_start=>dateadd('hour',-1,current_timestamp()) 
+
+  ) 
+
+); 
+
+ select * from s1_stream; 
+
+insert into s1 values (1, '2017-01-01 12:00:00' ); 
+
+select * from t1; 

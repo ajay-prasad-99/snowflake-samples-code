@@ -1,0 +1,62 @@
+Binding variables
+
+-- DOC Timestamp prior to now.
+
+CREATE OR REPLACE PROCEDURE right_bind (TIMESTAMP_VALUE VARCHAR)
+RETURNS BOOLEAN
+LANGUAGE JAVASCRIPT
+AS
+$$
+var cmd = "SELECT CURRENT_DATE() > TO_TIMESTAMP(:1, 'YYYY-MM-DD HH24:MI:SS')";
+var stmt = snowflake.createStatement(
+          {
+          sqlText: cmd,
+          binds: [TIMESTAMP_VALUE]
+          }
+          );
+var result1 = stmt.execute();
+result1.next();
+return result1.getColumnValue(1);
+$$
+;
+
+CALL right_bind('2021-09-16 01:02:03');
+
+----next recursive stored procedure
+
+create or replace table piece1 (col1 FLOAT);
+
+create or replace procedure repeats(counter FLOAT)
+    returns varchar not null
+    language javascript
+    as
+    
+    $$
+    var counter1 = COUNTER;
+    var returned_value = "";
+    var accumulator = "";
+    var stmt = snowflake.createStatement(
+        {
+        sqlText: "INSERT INTO piece1 (col1) VALUES (?);",
+        binds:[counter1]
+        }
+        );
+    var res = stmt.execute();
+    if (COUNTER > 0)
+        {
+        stmt = snowflake.createStatement(
+            {
+            sqlText: "call repeats (?);",
+            binds:[counter1 - 1]
+            }
+            );
+        res = stmt.execute();
+        res.next();
+        returned_value = res.getColumnValue(1);
+        }
+    accumulator = accumulator + counter1 + ":" + returned_value;
+    return accumulator;
+    $$
+    ;
+    
+call repeats (4.0::float);

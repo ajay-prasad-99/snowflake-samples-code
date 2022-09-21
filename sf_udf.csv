@@ -1,0 +1,46 @@
+create or replace function area_of_circle (radius float ) 
+returns float as 
+'pi() * radius * radius'; 
+select area_of_circle(180);
+--UDF FUNCTION 
+create or replace function numint() 
+returns int  
+as 
+'8889.99::int';
+select numint(); 
+--UDF ADDING COLUMN VALUES 
+create or replace table People (expy int, name varchar, power int); 
+insert into  People values (1, 'luffy', '3000'),(2, 'zoro', '2000'),(3, 'sanji', '1000'); 
+select * from  People; 
+create or replace function people_punch() 
+returns numeric 
+as 
+$$ 
+select sum ( + power) 
+from People 
+$$ 
+; 
+select people_punch(); 
+show user functions; 
+drop function  people_punch(); 
+--select udf
+create or replace table People (expy int, name varchar, power int); 
+insert into  People values (1, 'luffy', '3000'),(2, 'zoro', '2000'),(3, 'sanji', '1000'); 
+select * from  People; 
+create or replace function  people_select(people_pow number)
+ returns table(name varchar)
+ as
+ $$
+ select name from "SAMPLEOP"."SAMPLESCH"."PEOPLE" where power=people_pow
+ $$
+ ;
+select name from table(people_select(1000));
+create or replace function udf_max()
+  returns NUMBER(7,2)
+  as
+  $$
+    select max(power) from "SAMPLEOP"."SAMPLESCH"."PEOPLE"
+  $$
+  ;
+select udf_max();
+select * from "SAMPLEOP"."SAMPLESCH"."PEOPLE";

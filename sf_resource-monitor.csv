@@ -1,0 +1,41 @@
+create or replace resource monitor poc_monitor with  
+
+                                       credit_quota = 200 
+
+                                       frequency = daily 
+
+                                       start_timestamp = "2022-05-05 10:45 UTC" 
+
+                                       end_timestamp = "2022-06-08 23:35 UTC" 
+
+                                       Triggers  
+
+                                       ON 80 PERCENT DO SUSPEND  
+
+                                       ON 100 PERCENT DO SUSPEND_IMMEDIATE  
+
+                                       ON 60 PERCENT DO NOTIFY; 
+
+ALTER WAREHOUSE poc_wh SET RESOURCE_MONITOR = poc; 
+
+ Show resource monitors like 'poc_monitor' ; 
+
+show streams; 
+
+alter resource monitor poc_monitor 
+
+  set credit_quota= 100 
+
+  frequency= monthly 
+
+  start_timestamp= "2022-05-07 10:30 UTC" 
+
+  end_timestamp= "2022-05-08 23:59 UTC" 
+
+  --notify_users = (jdoe, "jane smith", "john doe") 
+
+  triggers on 90 percent do notify 
+
+           on 100 percent do suspend_immediate;  
+
+DROP resource monitor poc_monitoR 

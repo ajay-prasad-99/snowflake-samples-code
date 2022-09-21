@@ -1,0 +1,29 @@
+-- snowflake time travel (show us how to access history or deleted data);
+SHOW TABLES;
+
+create or replace table people (name varchar, id integer,age integer,play varchar); 
+insert into people (name, id, age, play) values ('luffy',555,21,'gum'), ('zoro',888,21,'sword'), ('sanji',555,27,'cook'), ('nami',777, null,'navi'),
+                                          ('chopper',000,17,'medicine'), ('usopp',111,17,'tool'), ('robin',222,27,'reader'); 
+select * from people;                                        
+update people set play='pirate';
+drop table  people;
+create or replace table people
+as;
+SELECT * from people at(offset => -60*0.10);
+
+select * from people before(statement => '01a5e8f1-3200-7f2d-0001-470a00051642');
+select * from people at(timestamp => '2022-07-28 08:57:53.474 -0700'::timestamp_tz);
+select * from people at(offset => -60*60*24*1);
+
+select * from people before(timestamp => '2022-07-28 :39:41.232 -0700'::timestamp);
+
+select current_timestamp();
+
+
+Show databases;
+DROP DATABASE SAMPLEOP;
+UNDROP DATABASE SAMPLEOP;
+select * from people;
+Show databases;
+
+ALTER DATABASE SAMPLEOP SET DATA_RETENTION_TIME_IN_DAYS = 0;
