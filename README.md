@@ -1,2 +1,2 @@
-# sf_sql
+# snowflake samples
 Collection of snowflake sample code
